@@ -1,9 +1,34 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: "DB Ozone";
+  src: url("/font/DB_Ozone_X_UlLi_v3.2.ttf");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "DB Ozone";
+  src: url("/font/DB_Ozone_X_v3.2.ttf");
+  font-weight: 600;
+  font-style: semibold;
+}
+
+@font-face {
+  font-family: "DB Ozone";
+  src: url("/font/DB_Ozone_X_Bold_v3.2.ttf");
+  font-weight: bold;
+  font-style: bold;
+}
+
 html,
 body {
   padding: 0;
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
-    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  font-family: "DB Ozone", "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS",
+    sans-serif;
 }
 
 a {

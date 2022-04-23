@@ -1,13 +1,17 @@
 /* This Navbar requires Tailwind CSS v2.0+ */
-import { Fragment } from "react";
+import { Fragment, useContext } from "react";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { BellIcon, MenuIcon, XIcon } from "@heroicons/react/outline";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { UserContext } from "../../context/UserContext";
+import useUserAuthentication from "../../hooks/useUserAuthentication";
 
-const navigation = [{ name: "Dashboard", href: "#", current: true }];
+const navigation = [{ name: "Events", href: "/", current: true }];
 
 export default function Navbar() {
+  const { userInformation } = useContext(UserContext);
+  const { onLogout } = useUserAuthentication();
   const router = useRouter();
   return (
     <Disclosure as="nav" className="bg-black">
@@ -28,29 +32,24 @@ export default function Navbar() {
               <div className=" flex items-center justify-center sm:items-stretch sm:justify-start">
                 <div className="flex-shrink-0 flex items-center">
                   <Link href="/" passHref>
-                    <img
-                      className="block h-8 w-auto cursor-pointer"
-                      src="https://tailwindui.com/img/logos/workflow-logo-indigo-500-mark-white-text.svg"
-                      alt="Workflow"
-                    />
+                    <div className="text-4xl font-party text-white cursor-pointer ">ENJOIN</div>
                   </Link>
                 </div>
                 <div className="hidden sm:block sm:ml-6">
                   <div className="flex space-x-4">
                     {navigation.map((item) => (
-                      <a
-                        key={item.name}
-                        href={item.href}
-                        className={`${
-                          item.current
-                            ? "bg-gray-900 text-white"
-                            : "text-gray-300 hover:bg-gray-700 hover:text-white"
-                        }
-                          'px-3 py-2 rounded-md text-sm font-medium`}
-                        aria-current={item.current ? "page" : undefined}
-                      >
-                        {item.name}
-                      </a>
+                      <Link key={item.name} href={item.href} passHref>
+                        <div
+                          className={`${
+                            item.current
+                              ? "bg-gray-900 text-white"
+                              : "text-gray-300 hover:bg-gray-700 hover:text-white"
+                          }
+                          'px-3 py-2 rounded-md text-sm font-medium cursor-pointer w-20 text-center`}
+                        >
+                          {item.name}
+                        </div>
+                      </Link>
                     ))}
                   </div>
                 </div>
@@ -66,13 +65,10 @@ export default function Navbar() {
                 <Menu as="div" className="ml-3 relative">
                   <div>
                     <Menu.Button className="bg-gray-800 flex text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
-                      <button
-                        type="button"
-                        className="bg-gray-800 p-1 rounded-full text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white"
-                      >
+                      <div className="bg-gray-800 p-1 rounded-full text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
                         <span className="sr-only">View notifications</span>
                         <BellIcon className="h-6 w-6" aria-hidden="true" />
-                      </button>
+                      </div>
                     </Menu.Button>
                   </div>
 
@@ -96,11 +92,11 @@ export default function Navbar() {
                   <div>
                     <Menu.Button className="bg-gray-800 flex text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
                       <span className="sr-only">Open user menu</span>
-                      <img
-                        className="h-8 w-8 rounded-full"
-                        src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                        alt=""
-                      />
+                      <div className="h-8 w-8 rounded-full bg-gray-800 text-white">
+                        <span className="text-xl font-bold">
+                          {userInformation?.username?.[0]}
+                        </span>
+                      </div>
                     </Menu.Button>
                   </div>
 
@@ -136,6 +132,7 @@ export default function Navbar() {
                           className={`${
                             active ? "bg-gray-100" : ""
                           } block px-4 py-2 text-sm text-gray-700`}
+                          onClick={onLogout}
                         >
                           Sign out
                         </a>

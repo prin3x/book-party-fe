@@ -5,6 +5,8 @@ import { useForm, SubmitHandler } from "react-hook-form";
 type Inputs = {
   title: string;
   capacity: number;
+  startDate: string;
+  duration: number;
 };
 
 type Props = {};
@@ -22,7 +24,6 @@ function CreatePartyForm({}: Props) {
     router.push("/");
   };
 
-  console.log(watch("capacity")); // watch input value by passing the name of it
 
   return (
     <div className="w-screen h-screen min-h-full">
@@ -30,7 +31,7 @@ function CreatePartyForm({}: Props) {
         <div className="form-container">
           <div className="block p-6 rounded-lg shadow-lg max-w-sm">
             <div className="logo-container text-center">
-              <div className="text-9xl font-bold tracking-wider text-red-600">
+              <div className="text-6xl font-party text-black cursor-pointer text-center my-10">
                 Lets&apos;t Party!
               </div>
             </div>

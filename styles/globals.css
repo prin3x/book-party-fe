@@ -23,6 +23,13 @@
   font-style: bold;
 }
 
+@font-face {
+  font-family: "PartyConfetti";
+  src: url("/font/PartyConfettiRegular-eZOn3.ttf");
+  font-weight: normal;
+  font-style: normal;
+}
+
 html,
 body {
   padding: 0;
@@ -39,3 +46,15 @@ a {
 * {
   box-sizing: border-box;
 }
+
+.font-party {
+  font-family: "PartyConfetti";
+}
+
+
+.bg-concert {
+  background-image: linear-gradient(to top, #ffffff00, #0000),url('/assets/nainoa-shizuru-NcdG9mK3PBY-unsplash.jpeg') ;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+

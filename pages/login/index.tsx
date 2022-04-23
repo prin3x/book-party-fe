@@ -1,14 +1,18 @@
-import React from 'react'
-import LoginForm from '../../components/Login/LoginForm'
+import Head from "next/head";
+import React from "react";
+import LoginForm from "../../components/Login/LoginForm";
 
-type Props = {}
+type Props = {};
 
 function LoginPage({}: Props) {
   return (
     <div>
-        <LoginForm/>
+      <Head>
+        <title>Login</title>
+      </Head>
+      <LoginForm />
     </div>
-  )
+  );
 }
 
-export default LoginPage
+export default LoginPage;

@@ -7,6 +7,9 @@ import { TimePicker } from "@mui/x-date-pickers/TimePicker";
 import { formatISO9075 } from "date-fns";
 import { ICreatePartyModel } from "../../services/party/party.model";
 import { _createParty } from "../../services/party/party.service";
+import { SaveIcon } from "@heroicons/react/outline";
+import LoadingButton from "@mui/lab/LoadingButton";
+import Image from "next/image";
 
 type Inputs = {
   title: string;
@@ -29,12 +32,15 @@ function CreatePartyForm({}: Props) {
     formState: { errors },
   } = useForm<Inputs>();
   const [dateTime, setDateTime] = React.useState<Date | null>(new Date());
+  const [isLoading, setIsLoading] = React.useState<boolean>(false)
   const [base64Image, setBase64Image] = React.useState<string>("");
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
+    setIsLoading(true)
     if (!dateTime) return;
     const set = {} as ICreatePartyModel;
     set.title = data.title;
     set.capacity = data.capacity;
+    set.description = data.description;
     set.duration = data.duration;
     set.startDate = formatISO9075(new Date(dateTime));
     set.image = data.image[0];
@@ -44,6 +50,8 @@ function CreatePartyForm({}: Props) {
       router.push("/");
     } catch (e) {
       console.error(e);
+    } finally {
+      setIsLoading(false)
     }
   };
 
@@ -76,7 +84,7 @@ function CreatePartyForm({}: Props) {
           <div className="block p-6 rounded-lg shadow-lg max-w-sm">
             <div className="logo-container text-center">
               <div className="text-6xl font-party text-black cursor-pointer text-center my-10">
-                Lets&apos;t Party!
+                Let&apos;s Party!
               </div>
             </div>
             <form onSubmit={handleSubmit(onSubmit)}>
@@ -87,17 +95,19 @@ function CreatePartyForm({}: Props) {
                       Upload Party Cover (jpg,png,jpeg,gif)
                     </label>
                     <div className="flex items-center justify-center w-full">
-                      <label className="flex flex-col w-full h-36 border-1 border-dashed hover:bg-gray-100 hover:border-black">
+                      <label className="flex flex-col w-full h-36 border-2 border-dashed hover:bg-gray-100 hover:border-black">
                         <div
-                          className={`flex flex-col items-center justify-center ${
+                          className={`flex flex-col items-center justify-center cursor-pointer ${
                             base64Image ? "" : "pt-7"
                           }`}
                         >
                           {base64Image && (
-                            <img
+                            <Image
                               src={base64Image || ""}
                               alt="example"
                               className="h-36 w-full"
+                              height={140}
+                              width={250}
                             />
                           )}
                           <p className="pt-1 text-sm tracking-wider text-gray-400 group-hover:text-gray-600">
@@ -107,7 +117,7 @@ function CreatePartyForm({}: Props) {
                         <input
                           {...register("image", { required: true })}
                           type="file"
-                          className="opacity-0"
+                          className="opacity-0 cursor-pointer"
                           onChange={onUploadFile}
                         />
                       </label>
@@ -187,12 +197,22 @@ function CreatePartyForm({}: Props) {
                   </label>
                 </div>
               </div>
-              <button
+              <LoadingButton
                 type="submit"
                 className="mt-3 w-full text-xl px-6 py-2.5 bg-red-500 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-red-700 hover:shadow-lg focus:bg-red-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-red-800 active:shadow-lg transition duration-150 ease-in-out"
+                loading={isLoading}
+                loadingPosition="start"
+                startIcon={<SaveIcon />}
+                sx={{
+                  backgroundColor: "rgb(255, 0, 0)",
+                  color: "#fff",
+                  "&:hover": {
+                    backgroundColor: "rgb(155, 0, 0)",
+                  },
+                }}
               >
                 Create
-              </button>
+              </LoadingButton>
             </form>
           </div>
         </div>

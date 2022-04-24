@@ -1,3 +1,5 @@
+import { UserDetail } from "../auth/auth.model";
+
 export interface ICreatePartyModel {
   title: string;
   capacity: number;
@@ -10,6 +12,10 @@ export interface ICreatePartyModel {
 export interface IPartyModel extends ICreatePartyModel {
   id: string;
   coverImage: string;
+  joined: number;
+  userDetail: UserDetail;
+  isJoined: boolean;
+  isOwner: boolean;
 }
 
 export interface IQueryParams {
@@ -34,4 +40,9 @@ export interface IPartyDetail {
   itemCount: number;
   page: number;
   isLoading?: boolean;
+}
+
+export interface IJoinParty {
+  partyId: string;
+  totalGuest: number;
 }

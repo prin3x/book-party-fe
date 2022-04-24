@@ -12,6 +12,7 @@ function LayoutHOC({ children }: Props) {
   useEffect(() => {
     onStartApp();
   }, []);
+  
   return (
     <div>
       <>

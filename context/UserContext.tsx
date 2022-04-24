@@ -13,8 +13,6 @@ export function UserProvider(props: any) {
     {} as IUserInformation
   );
 
-  console.log(userInformation,'userInformation')
-
   const setUserGlobal = (_user: IUserInformation) => {
     setUserInformation(_user);
   };

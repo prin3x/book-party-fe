@@ -1,12 +1,21 @@
 import { useRouter } from "next/router";
 import React from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
+import { MobileDatePicker } from "@mui/x-date-pickers/MobileDatePicker";
+import TextField from "@mui/material/TextField";
+import { TimePicker } from "@mui/x-date-pickers/TimePicker";
+import { formatISO9075 } from "date-fns";
+import { ICreatePartyModel } from "../../services/party/party.model";
+import { _createParty } from "../../services/party/party.service";
 
 type Inputs = {
   title: string;
   capacity: number;
   startDate: string;
+  startTime: string;
+  description: string;
   duration: number;
+  image: any;
 };
 
 type Props = {};
@@ -19,11 +28,46 @@ function CreatePartyForm({}: Props) {
     watch,
     formState: { errors },
   } = useForm<Inputs>();
-  const onSubmit: SubmitHandler<Inputs> = (data) => {
-    console.log(data);
-    router.push("/");
+  const [dateTime, setDateTime] = React.useState<Date | null>(new Date());
+  const [base64Image, setBase64Image] = React.useState<string>("");
+  const onSubmit: SubmitHandler<Inputs> = async (data) => {
+    if (!dateTime) return;
+    const set = {} as ICreatePartyModel;
+    set.title = data.title;
+    set.capacity = data.capacity;
+    set.duration = data.duration;
+    set.startDate = formatISO9075(new Date(dateTime));
+    set.image = data.image[0];
+
+    try {
+      await _createParty(set);
+      router.push("/");
+    } catch (e) {
+      console.error(e);
+    }
   };
 
+  const onChangeDateTime = (date: Date | null) => {
+    if (!date) return;
+    const newDate = new Date(date);
+    setDateTime(newDate);
+  };
+
+  const onUploadFile = async (e: any) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    let getImageBase64 = await getBase64(file);
+    setBase64Image(getImageBase64);
+  };
+
+  function getBase64(img: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(img);
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = (error) => reject(error);
+    });
+  }
 
   return (
     <div className="w-screen h-screen min-h-full">
@@ -37,15 +81,61 @@ function CreatePartyForm({}: Props) {
             </div>
             <form onSubmit={handleSubmit(onSubmit)}>
               <div className="form-group mb-6">
+                <div className="flex justify-center mt-8">
+                  <div className="mb-8">
+                    <label className="form-label inline-block mb-2 text-gray-6 w-full ">
+                      Upload Party Cover (jpg,png,jpeg,gif)
+                    </label>
+                    <div className="flex items-center justify-center w-full">
+                      <label className="flex flex-col w-full h-36 border-1 border-dashed hover:bg-gray-100 hover:border-black">
+                        <div
+                          className={`flex flex-col items-center justify-center ${
+                            base64Image ? "" : "pt-7"
+                          }`}
+                        >
+                          {base64Image && (
+                            <img
+                              src={base64Image || ""}
+                              alt="example"
+                              className="h-36 w-full"
+                            />
+                          )}
+                          <p className="pt-1 text-sm tracking-wider text-gray-400 group-hover:text-gray-600">
+                            Select a cover
+                          </p>
+                        </div>
+                        <input
+                          {...register("image", { required: true })}
+                          type="file"
+                          className="opacity-0"
+                          onChange={onUploadFile}
+                        />
+                      </label>
+                    </div>
+                  </div>
+                </div>
                 <label className="form-label inline-block mb-2 text-gray-6 w-full ">
                   PARTY TITLE
                   <input
                     {...register("title", { required: true })}
                     type="title"
-                    className="form-control block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
+                    className="form-control block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-black hover:border-black focus:outline-none"
                     placeholder="Enter Party Title"
                   />
                 </label>
+              </div>
+              <div className="flex justify-center">
+                <div className="mb-3 w-full">
+                  <label className="form-label inline-block mb-2 text-gray-700 w-full">
+                    Description
+                    <input
+                      {...register("description", { required: true })}
+                      type="title"
+                      className="form-control block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-black hover:border-black focus:outline-none"
+                      placeholder="Enter Party Short Description"
+                    />
+                  </label>
+                </div>
               </div>
               <div className="flex justify-center">
                 <div className="mb-3 w-full">
@@ -54,7 +144,44 @@ function CreatePartyForm({}: Props) {
                     <input
                       {...register("capacity", { required: true })}
                       type="number"
-                      className="form-control block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
+                      className="form-control block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-black hover:border-black focus:outline-none"
+                      placeholder="Capacity"
+                    />
+                  </label>
+                </div>
+              </div>
+              <label className="form-label inline-block mb-0 text-gray-700 w-full">
+                Date and Time
+              </label>
+              <div className="flex mb-3 w-full">
+                <div className="flex-none">
+                  <MobileDatePicker
+                    {...register("startDate")}
+                    inputFormat="MM/dd/yyyy"
+                    value={dateTime}
+                    onChange={onChangeDateTime}
+                    renderInput={(params) => <TextField {...params} />}
+                  />
+                </div>
+                <div className="ml-3">
+                  <TimePicker
+                    {...register("startTime")}
+                    value={dateTime}
+                    onChange={onChangeDateTime}
+                    renderInput={(params) => {
+                      return <TextField {...params} />;
+                    }}
+                  />
+                </div>
+              </div>
+              <div className="flex justify-center">
+                <div className="mb-3 w-full">
+                  <label className="form-label inline-block mb-2 text-gray-700 w-full">
+                    Duration
+                    <input
+                      {...register("duration", { required: true })}
+                      type="number"
+                      className="form-control block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-black hover:border-black focus:outline-none"
                       placeholder="Capacity"
                     />
                   </label>

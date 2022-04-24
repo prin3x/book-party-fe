@@ -32,7 +32,7 @@ export default function Navbar() {
               <div className=" flex items-center justify-center sm:items-stretch sm:justify-start">
                 <div className="flex-shrink-0 flex items-center">
                   <Link href="/" passHref>
-                    <div className="text-4xl font-party text-white cursor-pointer ">ENJOIN</div>
+                    <div className="text-4xl font-party text-white cursor-pointer ml-12 sm:ml-0">ENJOIN</div>
                   </Link>
                 </div>
                 <div className="hidden sm:block sm:ml-6">

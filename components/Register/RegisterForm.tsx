@@ -24,10 +24,8 @@ function RegisterForm({}: Props) {
   } = useForm<Inputs>();
   const onSubmit: SubmitHandler<Inputs> = (data) => {
     console.log(data);
-    router.push("/");
+    // router.push("/");
   };
-
-  console.log(watch("username")); // watch input value by passing the name of it
 
   function onCheckPolicy(_isCheck: boolean) {
     if (!_isCheck) {

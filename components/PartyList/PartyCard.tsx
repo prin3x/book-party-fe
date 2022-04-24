@@ -1,16 +1,20 @@
 import Image from "next/image";
 import React from "react";
+import { IPartyModel } from "../../services/party/party.model";
 
-type Props = {};
+type Props = {
+  party: IPartyModel
+};
 
-function PartyCard({}: Props) {
+function PartyCard({party}: Props) {
+  console.log(party)
   return (
     <div className="flex self-start">
-      <div className="rounded-lg shadow-lg bg-white max-w-sm">
+      <div className="rounded-lg shadow-lg bg-white max-w-sm h-96 min-h-full min-w-sm">
         <a href="#!" data-mdb-ripple="true" data-mdb-ripple-color="light">
           <img
             className="rounded-t-lg"
-            src="https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1740&q=80"
+            src={party.coverImage}
             alt=""
           />
         </a>

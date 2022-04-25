@@ -1,12 +1,16 @@
 import { useRouter } from "next/router";
-import React from "react";
+import React, { useEffect, useMemo } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { MobileDatePicker } from "@mui/x-date-pickers/MobileDatePicker";
 import TextField from "@mui/material/TextField";
 import { TimePicker } from "@mui/x-date-pickers/TimePicker";
 import { formatISO9075 } from "date-fns";
-import { ICreatePartyModel } from "../../services/party/party.model";
-import { _createParty } from "../../services/party/party.service";
+import {
+  ICreatePartyModel,
+  IPartyModel,
+  IUpdatePartyModel,
+} from "../../services/party/party.model";
+import { _createParty, _updateParty } from "../../services/party/party.service";
 import { SaveIcon } from "@heroicons/react/outline";
 import LoadingButton from "@mui/lab/LoadingButton";
 import Image from "next/image";
@@ -21,37 +25,68 @@ type Inputs = {
   image: any;
 };
 
-type Props = {};
+type Props = {
+  initialFormValues?: IPartyModel;
+  isUpdate: boolean;
+};
 
-function CreatePartyForm({}: Props) {
+function CreatePartyForm({ initialFormValues, isUpdate }: Props) {
   const router = useRouter();
+  const [base64Image, setBase64Image] = React.useState<string>("");
+  const [dateTime, setDateTime] = React.useState<Date | null>(new Date());
   const {
     register,
     handleSubmit,
     watch,
+    setValue,
     formState: { errors },
+    reset,
   } = useForm<Inputs>();
-  const [dateTime, setDateTime] = React.useState<Date | null>(new Date());
-  const [isLoading, setIsLoading] = React.useState<boolean>(false)
-  const [base64Image, setBase64Image] = React.useState<string>("");
+  const [isLoading, setIsLoading] = React.useState<boolean>(false);
+
+  useEffect(() => {
+    if (!initialFormValues || !isUpdate) return;
+    setBase64Image(initialFormValues.coverImage);
+    setDateTime(new Date(initialFormValues.startDate));
+    const set = {
+      ...initialFormValues,
+    };
+    reset(set);
+  }, [reset]);
+
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
-    setIsLoading(true)
+    console.log(data, "data");
+    setIsLoading(true);
     if (!dateTime) return;
-    const set = {} as ICreatePartyModel;
-    set.title = data.title;
-    set.capacity = data.capacity;
-    set.description = data.description;
-    set.duration = data.duration;
-    set.startDate = formatISO9075(new Date(dateTime));
-    set.image = data.image[0];
 
     try {
-      await _createParty(set);
+      if (!isUpdate) {
+        const set = {} as ICreatePartyModel;
+        set.title = data.title;
+        set.capacity = data.capacity;
+        set.description = data.description;
+        set.duration = data.duration;
+        set.startDate = formatISO9075(new Date(dateTime));
+        set.image = data.image[0];
+        await _createParty(set);
+      } else if (isUpdate && initialFormValues) {
+        console.log(data.image[0], "data.image[0]");
+        const set = {} as IUpdatePartyModel;
+        set.title = data.title;
+        set.capacity = data.capacity;
+        set.description = data.description;
+        set.duration = data.duration;
+        set.startDate = formatISO9075(new Date(dateTime));
+        set.image = data.image[0];
+        set.id = initialFormValues.id;
+
+        await _updateParty(set);
+      }
       router.push("/");
     } catch (e) {
       console.error(e);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
   };
 
@@ -115,7 +150,9 @@ function CreatePartyForm({}: Props) {
                           </p>
                         </div>
                         <input
-                          {...register("image", { required: true })}
+                          {...register("image", {
+                            required: isUpdate ? false : true,
+                          })}
                           type="file"
                           className="opacity-0 cursor-pointer"
                           onChange={onUploadFile}
@@ -211,7 +248,7 @@ function CreatePartyForm({}: Props) {
                   },
                 }}
               >
-                Create
+                {!isUpdate ? "Create" : "Update"}
               </LoadingButton>
             </form>
           </div>

@@ -4,6 +4,7 @@ import { SaveIcon } from "@heroicons/react/outline";
 import LoadingButton from "@mui/lab/LoadingButton";
 import Image from "next/image";
 import { Button } from "@mui/material";
+import { useRouter } from "next/router";
 
 type Props = {
   party: IPartyModel;
@@ -12,6 +13,7 @@ type Props = {
 };
 
 function PartyCard({ party, onJoinParty, onUndoJoinParty }: Props) {
+  const router = useRouter();
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
   const onPressJoin = async (id: string) => {
@@ -25,18 +27,19 @@ function PartyCard({ party, onJoinParty, onUndoJoinParty }: Props) {
     }
   };
 
-  console.log(party, "party");
-
   return (
     <div className="flex self-start">
       <div className="rounded-lg shadow-lg bg-white max-w-sm h-full min-h-full min-w-sm">
-        <Image
-          className="rounded-t-lg"
-          src={party.coverImage}
-          alt=""
-          width={384}
-          height={195}
-        />
+        <div className="relative overflow-hidden bg-no-repeat bg-cover">
+          <Image
+            className="rounded-t-lg"
+            src={party.coverImage}
+            alt=""
+            width={384}
+            height={195}
+          />
+          <div className="absolute top-0 right-0 bottom-0 left-0 w-full h-full overflow-hidden bg-fixed opacity-0 hover:opacity-40 transition duration-300 ease-in-out bg-white"></div>
+        </div>
         <div className="p-6 h-48 max-h-48">
           <div className="flex justify-between">
             <h5 className="text-gray-900 text-xl font-medium mb-2">
@@ -78,18 +81,19 @@ function PartyCard({ party, onJoinParty, onUndoJoinParty }: Props) {
                 loading={isLoading}
                 loadingPosition="start"
                 startIcon={<SaveIcon />}
-                sx={{
-                  backgroundColor: "rgb(255, 0, 0)",
-                  color: "#fff",
-                  "&:hover": {
-                    backgroundColor: "rgb(155, 0, 0)",
-                  },
-                }}
+                // sx={{
+                //   backgroundColor: "rgb(255, 0, 0)",
+                //   color: "#fff",
+                //   "&:hover": {
+                //     backgroundColor: "rgb(155, 0, 0)",
+                //   },
+                // }}
               >
                 Cancel
               </LoadingButton>
             ) : (
               <Button
+                onClick={() => router.push(`/edit/${party.id}`)}
                 className="w-full text-xl px-6 py-2.5 bg-black text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:shadow-lg focus:shadow-lg focus:outline-none focus:ring-0 active:shadow-lg transition duration-150 ease-in-out"
                 variant="contained"
                 sx={{

@@ -12,7 +12,7 @@ function CreatePartyIndex({}: Props) {
       <title>Create Party!</title>
     </Head>
     <LayoutHOC>
-      <CreatePartyForm />
+      <CreatePartyForm isUpdate={false} />
     </LayoutHOC>
     </>
   );

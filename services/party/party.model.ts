@@ -18,6 +18,12 @@ export interface IPartyModel extends ICreatePartyModel {
   isOwner: boolean;
 }
 
+
+export interface IUpdatePartyModel extends ICreatePartyModel {
+  id: string;
+}
+
+
 export interface IQueryParams {
   page?: number;
 

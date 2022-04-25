@@ -1,5 +1,5 @@
 import axios from "axios";
-import { ICreatePartyModel, IJoinParty, IPartyModel } from "./party.model";
+import { ICreatePartyModel, IJoinParty, IPartyModel, IUpdatePartyModel } from "./party.model";
 
 export async function _findAllParties(query: string) {
   return await axios.get(`/party?${query}`).then((res) => res.data);
@@ -21,8 +21,24 @@ export async function _createParty(_partyDetail: ICreatePartyModel) {
   return await axios.post(config.url, config.data).then((res) => res.data);
 }
 
-export async function _updateParty(_partyDetail: IPartyModel) {
-  return await axios.patch(`/party/${_partyDetail.id}`, { ..._partyDetail });
+export async function _getPartyById(id: string): Promise<IPartyModel> {
+  return await axios.get(`/party/single/${id}`).then((res) => res.data);
+}
+
+export async function _updateParty(_partyDetail: IUpdatePartyModel) {
+  let formData = new FormData();
+  formData.append("title", _partyDetail.title);
+  formData.append("description", _partyDetail.description);
+  formData.append("capacity", _partyDetail.capacity.toString());
+  formData.append("image", _partyDetail.image);
+  formData.append("duration", _partyDetail.duration.toString());
+  formData.append("startDate", _partyDetail.startDate);
+
+  const config = {
+    url: `/party/update/${_partyDetail.id}`,
+    data: formData,
+  };
+  return await axios.patch(config.url, config.data).then((res) => res.data);
 }
 
 export async function _removeParty(id: string) {

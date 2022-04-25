@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import {
   IJoinParty,
   IPartyDetail,
-  IPartyModel,
   IQueryParams,
 } from "../../services/party/party.model";
 import PartyCard from "./PartyCard";
@@ -14,6 +13,11 @@ import {
 } from "../../services/party/party.service";
 import { formatISO9075 } from "date-fns";
 import Pagination from "@mui/material/Pagination";
+import io from "socket.io-client";
+import CustomizedSnackbars, {
+  ESeverity,
+  SnackbarProps,
+} from "../Utils/CustomSnack";
 
 type Props = {};
 
@@ -24,14 +28,33 @@ const INIT_PARTY_QUERY = {
   page: 1,
 };
 
+let socket: any;
+
 function PartyListContainer({}: Props) {
   const [partyDetails, setPartyDetails] = useState<IPartyDetail>({
     isLoading: true,
   } as IPartyDetail);
   const [queryParams, setQueryParams] =
     useState<IQueryParams>(INIT_PARTY_QUERY);
+  const [snackbarProps, setSnackbarProps] = useState<SnackbarProps>({
+    open: false,
+  } as SnackbarProps);
 
-  async function fetchPartyList(query: IQueryParams) {
+  const socketInitializer = async () => {
+    socket = io("http://localhost:4000");
+
+    socket.on("connect", () => {
+      console.log("connected");
+    });
+
+    socket.on("userJoinEvent", (msg: any) => console.log(msg));
+  };
+
+  useEffect(() => {
+    socketInitializer();
+  }, []);
+
+  async function fetchPartyList(query: IQueryParams = queryParams) {
     const stringQuery: string = queryString.stringify(query);
 
     let res: IPartyDetail = {} as IPartyDetail;
@@ -64,12 +87,23 @@ function PartyListContainer({}: Props) {
     set.partyId = _partyId;
     set.totalGuest = 1;
     await _joinParty(set);
+    await fetchPartyList();
+
+    setSnackbarProps({
+      open: true,
+      onClose: () => setSnackbarProps({ ...snackbarProps, open: false }),
+      severity: ESeverity.SUCCESS,
+      message: "Congratulations! You've successfully join",
+    });
+
+    socket.emit("userJoinParty");
   };
 
   const onUndoJoinParty = async (_partyId: string) => {
     const set = {} as IJoinParty;
     set.partyId = _partyId;
     await _cancelJoinParty(set);
+    await fetchPartyList();
   };
 
   useEffect(() => {
@@ -106,6 +140,7 @@ function PartyListContainer({}: Props) {
           </div>
         </div>
       </div>
+      {snackbarProps.open && <CustomizedSnackbars {...snackbarProps} />}
     </div>
   );
 }

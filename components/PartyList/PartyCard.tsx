@@ -81,13 +81,13 @@ function PartyCard({ party, onJoinParty, onUndoJoinParty }: Props) {
                 loading={isLoading}
                 loadingPosition="start"
                 startIcon={<SaveIcon />}
-                // sx={{
-                //   backgroundColor: "rgb(255, 0, 0)",
-                //   color: "#fff",
-                //   "&:hover": {
-                //     backgroundColor: "rgb(155, 0, 0)",
-                //   },
-                // }}
+                sx={{
+                  backgroundColor: "rgb(132 204 22)",
+                  color: "#fff",
+                  "&:hover": {
+                    backgroundColor: "rgb(100 204 22)",
+                  },
+                }}
               >
                 Cancel
               </LoadingButton>

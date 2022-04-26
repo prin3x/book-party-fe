@@ -14,16 +14,14 @@ type ReturnProps = {
   onLogout: () => void;
   onStartApp: () => void;
   onRegister: (_data: IUserAuthen) => void;
-  isFetching: boolean;
 };
 
 function useUserAuthentication(): ReturnProps {
   const router = useRouter();
-  const [isFetching, setIsFetching] = useState(false);
-  const { setUserGlobal, userInformation } = useContext(UserContext);
+  const { setUserGlobal, userInformation, completeFetchAuth } =
+    useContext(UserContext);
 
   async function onLogin(data: IUserAuthen) {
-    setIsFetching(true);
     try {
       let { access_token } = await _userLoginWebsite(data);
       if (access_token) {
@@ -34,38 +32,35 @@ function useUserAuthentication(): ReturnProps {
     } catch (e: any) {
       console.error(e?.response?.message);
     } finally {
-      setIsFetching(false);
+      completeFetchAuth();
     }
   }
 
   async function onStartApp() {
-    if(userInformation.username) return;
-    setIsFetching(true);
+    if (userInformation.username) return;
     try {
-      const userInformation: IUserInformation = await _checkAuth();
-      if (userInformation) {
-        setUserGlobal(userInformation);
+      const userFromAuthenCheck: IUserInformation = await _checkAuth();
+      if (userFromAuthenCheck) {
+        setUserGlobal(userFromAuthenCheck);
       }
     } catch (e: any) {
       console.error(e?.response?.message);
     } finally {
-      setIsFetching(false);
+      completeFetchAuth();
     }
   }
 
   async function onRegister(data: IUserAuthen) {
-    setIsFetching(true);
     try {
-      let { access_token } = await _userRegister(data);
-      if (access_token) {
-        localStorage.setItem("token", access_token);
-        setUserGlobal(jwtDecode(access_token));
+      let res = await _userRegister(data);
+      if (res.access_token) {
+        localStorage.setItem("token", res.access_token);
+        setUserGlobal(jwtDecode(res.access_token));
       }
-      router.push("/");
     } catch (e: any) {
       console.error(e?.response?.message);
     } finally {
-      setIsFetching(false);
+      completeFetchAuth();
     }
   }
 
@@ -82,7 +77,6 @@ function useUserAuthentication(): ReturnProps {
   return {
     onLogin,
     onLogout,
-    isFetching,
     onRegister,
     onStartApp,
   };

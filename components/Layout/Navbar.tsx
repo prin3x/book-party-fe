@@ -6,13 +6,15 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { UserContext } from "../../context/UserContext";
 import useUserAuthentication from "../../hooks/useUserAuthentication";
+import { ENotificationType } from "../../services/notification/notification.model";
 
 const navigation = [{ name: "Events", href: "/", current: true }];
 
 export default function Navbar() {
-  const { userInformation } = useContext(UserContext);
+  const { userInformation, notiList } = useContext(UserContext);
   const { onLogout } = useUserAuthentication();
   const router = useRouter();
+
   return (
     <Disclosure as="nav" className="bg-black">
       {({ open }) => (
@@ -32,7 +34,9 @@ export default function Navbar() {
               <div className=" flex items-center justify-center sm:items-stretch sm:justify-start">
                 <div className="flex-shrink-0 flex items-center">
                   <Link href="/" passHref>
-                    <div className="text-4xl font-party text-white cursor-pointer ml-12 sm:ml-0">ENJOIN</div>
+                    <div className="text-4xl font-party text-white cursor-pointer ml-12 sm:ml-0">
+                      ENJOIN
+                    </div>
                   </Link>
                 </div>
                 <div className="hidden sm:block sm:ml-6">
@@ -72,19 +76,24 @@ export default function Navbar() {
                     </Menu.Button>
                   </div>
 
-                  <Menu.Items className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
-                    <Menu.Item>
-                      {({ active }) => (
-                        <a
-                          href="#"
-                          className={`${
-                            active ? "bg-gray-100" : ""
-                          } block px-4 py-2 text-sm text-gray-700`}
-                        >
-                          Your Profile
-                        </a>
-                      )}
-                    </Menu.Item>
+                  <Menu.Items className="origin-top-right absolute cursor-pointer right-0 mt-2 w-40 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
+                    {notiList?.[0] &&
+                      notiList?.map((_noti) => (
+                        <Menu.Item key={_noti.id}>
+                          {({ active }) => (
+                            <div
+                              onClick={() => router.push(`${_noti.destination ? _noti.destination : ''}`)}
+                              className={`${
+                                active ? "bg-gray-100" : ""
+                              } block px-4 py-2 text-sm text-left text-gray-700`}
+                            >
+                              {_noti.type === ENotificationType.USER_JOIN_PARTY
+                                ? "Someone Joins Your Party !"
+                                : "Your upcoming event has been changed"}
+                            </div>
+                          )}
+                        </Menu.Item>
+                      ))}
                   </Menu.Items>
                 </Menu>
 

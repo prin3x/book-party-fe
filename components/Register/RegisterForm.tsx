@@ -1,6 +1,7 @@
 import { useRouter } from "next/router";
 import React, { useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
+import useUserAuthentication from "../../hooks/useUserAuthentication";
 import PolicyModal from "../Login/PolicyModal";
 
 type Inputs = {
@@ -13,6 +14,7 @@ type Props = {};
 
 function RegisterForm({}: Props) {
   const router = useRouter();
+  const { onRegister } = useUserAuthentication();
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
   const {
@@ -22,9 +24,13 @@ function RegisterForm({}: Props) {
     getValues,
     formState: { errors },
   } = useForm<Inputs>();
-  const onSubmit: SubmitHandler<Inputs> = (data) => {
-    console.log(data);
-    // router.push("/");
+  const onSubmit: SubmitHandler<Inputs> = async (data) => {
+    try {
+      await onRegister(data);
+      router.push("/");
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   function onCheckPolicy(_isCheck: boolean) {

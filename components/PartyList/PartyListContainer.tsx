@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   IJoinParty,
   IPartyDetail,
@@ -18,6 +18,10 @@ import CustomizedSnackbars, {
   ESeverity,
   SnackbarProps,
 } from "../Utils/CustomSnack";
+import useUserAuthentication from "../../hooks/useUserAuthentication";
+import CircularProgress from "@mui/material/CircularProgress";
+import Box from "@mui/material/Box";
+import { UserContext } from "../../context/UserContext";
 
 type Props = {};
 
@@ -31,6 +35,7 @@ const INIT_PARTY_QUERY = {
 let socket: any;
 
 function PartyListContainer({}: Props) {
+  const { isFetchingAuth } = useContext(UserContext);
   const [partyDetails, setPartyDetails] = useState<IPartyDetail>({
     isLoading: true,
   } as IPartyDetail);
@@ -109,6 +114,14 @@ function PartyListContainer({}: Props) {
   useEffect(() => {
     fetchPartyList(queryParams);
   }, []);
+
+
+  if (isFetchingAuth)
+    return (
+      <div className="flex justify-center items-center w-screen h-screen">
+        <CircularProgress />
+      </div>
+    );
 
   return (
     <div className="p-10" id="party">

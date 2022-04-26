@@ -83,15 +83,6 @@ function LoginForm({}: Props) {
                   <input
                     type="checkbox"
                     className="transition duration-200  align-top bg-no-repeat bg-center bg-contain float-left mr-2 cursor-pointer"
-                  />
-                  Remember me
-                </label>
-              </div>
-              <div className="flex items-center">
-                <label className="block text-sm text-gray-900 flex items-center">
-                  <input
-                    type="checkbox"
-                    className="transition duration-200  align-top bg-no-repeat bg-center bg-contain float-left mr-2 cursor-pointer"
                     checked={isChecked}
                     onClick={() => onCheckPolicy(isChecked)}
                   />
